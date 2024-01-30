@@ -8,19 +8,23 @@
 import Foundation
 import CSV
 
-var grades: [[String]]
-var names: [String]
-var finalGrades: [Double]
-var rowGrades = 0
+var allGrades: [[String]] = []
+var names: [String] = []
+var finalGrades: [Double] = []
 
 func manageData(studentData: [String]){
+    var individualGrades: [String] = []
+    
     for i in studentData.indices{
         if i == 0{
             names.append(studentData[i])
         }else{
-            grades.append(studentData[i][rowGrades])
+            individualGrades.append(studentData[i])
         }
     }
+    
+    allGrades.append(individualGrades)
+    
 }
 
 do{
@@ -40,38 +44,40 @@ func averageGrade(){
     
     print("Which student would you like to choose?")
     if let student = readLine(){
-        while let row = csv.next(){
-            if row[0].caseInsensitiveCompare(student) == .orderedSame{
-                name = row[0]
-                for i in 1...row.count-1{
-                    sum += Double(row[i]) ?? 0.0
+        for i in names.indices{
+            if names[i].lowercased() == student{
+                name = names[i]
+                for j in allGrades[i]{
+                    sum += Double(j)!
                     total += 1
                 }
             }
         }
-        print("\(name)'s grade in class is \(sum / total)\n")
     }
+    print(sum)
+    print(total)
+    print("\(name)'s grade in class is \(sum / total)\n")
 }
 
-func allGrades(){
-    var grades = ""
-    var name = ""
-    
-    if let student = readLine(){
-        while let row = csv.next(){
-            if row[0].caseInsensitiveCompare(student) == .orderedSame{
-                name = row[0]
-                for i in 1...row.count-2{
-                    grades += row[i] + ", "
-                }
-                grades += row[row.count-1]
-                break
-            }
-        }
-        print("\(name)'s grades for this class are:\n\(grades)\n")
-        
-    }
-}
+//func allGrades(){
+//    var grades = ""
+//    var name = ""
+//    
+//    if let student = readLine(){
+//        while let row = csv.next(){
+//            if row[0].caseInsensitiveCompare(student) == .orderedSame{
+//                name = row[0]
+//                for i in 1...row.count-2{
+//                    grades += row[i] + ", "
+//                }
+//                grades += row[row.count-1]
+//                break
+//            }
+//        }
+//        print("\(name)'s grades for this class are:\n\(grades)\n")
+//        
+//    }
+//}
 
 func mainMenu(){
     print("""
@@ -93,9 +99,9 @@ What would you like to do? (Enter the number):
         case "1":
             averageGrade()
             mainMenu()
-        case "2":
-            allGrades()
-            mainMenu()
+//        case "2":
+//            allGrades()
+//            mainMenu()
         default:
             print("error")
         }
