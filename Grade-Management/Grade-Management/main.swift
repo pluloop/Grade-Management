@@ -8,23 +8,45 @@
 import Foundation
 import CSV
 
-var allGrades: [[String]] = []
+var everyoneGrades: [[String]] = []
 var names: [String] = []
 var finalGrades: [Double] = []
 
+func averageGrade(){
+    var name = ""
+    var position = 0
+    
+    print("Which student would you like to choose?")
+    if let student = readLine(){
+        for i in names.indices{
+            if names[i].lowercased() == student.lowercased(){
+                name = names[i]
+                position = i
+            }
+        }
+    }
+    print("\(name)'s grade in class is \(finalGrades[position])\n")
+}
+
 func manageData(studentData: [String]){
     var individualGrades: [String] = []
+    var total = 0.0
+    var sum = 0.0
     
     for i in studentData.indices{
         if i == 0{
             names.append(studentData[i])
         }else{
             individualGrades.append(studentData[i])
+            if let grade = Double(studentData[i])
+            {
+                sum += grade
+                total += 1.0
+            }
         }
     }
-    
-    allGrades.append(individualGrades)
-    
+    everyoneGrades.append(individualGrades)
+    finalGrades.append(sum / total)
 }
 
 do{
@@ -36,48 +58,124 @@ do{
 }catch{
     print("There was an error trying to read the file!")
 }
-    
-func averageGrade(){
-    var total = 0.0
-    var sum = 0.0
+
+func allGrades(){
     var name = ""
+    var grades = ""
     
     print("Which student would you like to choose?")
     if let student = readLine(){
-        for i in names.indices{
-            if names[i].lowercased() == student{
-                name = names[i]
-                for j in allGrades[i]{
-                    sum += Double(j)!
-                    total += 1
+        for user in names.indices{
+            if names[user].lowercased() == student{
+                name = names[user]
+                for grade in everyoneGrades[user]{
+                    if grade != everyoneGrades[user][everyoneGrades[user].count-1]{
+                        grades += grade + ", "
+                    }else{
+                        grades += grade
+                    }
+                }
+            }
+        }
+        print("\(name)'s grades for this class are:\n\(grades)\n")
+        
+    }
+}
+
+func everyoneAllGrades(){
+    var grades = ""
+    
+    for name in names.indices{
+        for grade in everyoneGrades[name]{
+            if grade != everyoneGrades[name][everyoneGrades[name].count-1]{
+                grades += grade + ", "
+            }else{
+                grades += grade
+            }
+        }
+        print("\(names[name]) grades are: \(grades)\n")
+        grades = ""
+    }
+}
+
+func classAverage(){
+    var sum = 0.0
+    var total = 0.0
+    
+    for grades in finalGrades{
+        sum += grades
+        total += 1.0
+    }
+    
+    print("The class average is: \(sum / total)\n")
+}
+
+func assignmentAverage(){
+    var assignmentNum = -1
+    var sum = 0.0
+    var total = 0.0
+    
+    print("Which assignent would you like to get the average of (1-10):")
+    if let numStr = readLine(), let numInt: Int = Int(numStr){
+        assignmentNum = numInt
+        for gradeList in everyoneGrades{
+            if let grade: Double = Double(gradeList[numInt-1]){
+                sum += grade
+                total += 1.0
+            }
+        }
+    }
+    
+    print("The average for assignment #\(assignmentNum) is \(sum / total)\n")
+}
+
+func lowestGrade(){
+    var lowest = finalGrades[0]
+    var name = ""
+    
+    for gradeIndex in finalGrades.indices{
+        let gradeDouble = finalGrades[gradeIndex]
+        if gradeDouble < lowest{
+            lowest = gradeDouble
+            name = names[gradeIndex]
+        }
+    }
+    
+    print("\(name) is the student with the lowest grade: \(lowest)\n")
+}
+
+func highestGrade(){
+    var highest = finalGrades[0]
+    var name = ""
+    
+    for gradeIndex in finalGrades.indices{
+        let gradeDouble = finalGrades[gradeIndex]
+        if gradeDouble > highest{
+            highest = gradeDouble
+            name = names[gradeIndex]
+        }
+    }
+    
+    print("\(name) is the student with the highest grade: \(highest)\n")
+}
+
+func filterGrades(){
+    var filteredList = ""
+    
+    print("Enter the low range you would like to use:")
+    if let minFilterStr = readLine(), let minFilterInt: Double = Double(minFilterStr){
+        print("Enter the high range you would like to use:")
+        if let maxFilterStr = readLine(), let maxFilterInt: Double = Double(maxFilterStr){
+            for gradeIndex in finalGrades.indices{
+                let rangedGrade: String = String(finalGrades[gradeIndex]){
+                    if finalGrades[gradeIndex] >= minFilterInt && finalGrades[gradeIndex] <= maxFilterInt{
+                        filteredList += names[gradeIndex] + ": " + rangedGrade + "\n"
+                    }
                 }
             }
         }
     }
-    print(sum)
-    print(total)
-    print("\(name)'s grade in class is \(sum / total)\n")
 }
-
-//func allGrades(){
-//    var grades = ""
-//    var name = ""
-//    
-//    if let student = readLine(){
-//        while let row = csv.next(){
-//            if row[0].caseInsensitiveCompare(student) == .orderedSame{
-//                name = row[0]
-//                for i in 1...row.count-2{
-//                    grades += row[i] + ", "
-//                }
-//                grades += row[row.count-1]
-//                break
-//            }
-//        }
-//        print("\(name)'s grades for this class are:\n\(grades)\n")
-//        
-//    }
-//}
 
 func mainMenu(){
     print("""
@@ -99,11 +197,29 @@ What would you like to do? (Enter the number):
         case "1":
             averageGrade()
             mainMenu()
-//        case "2":
-//            allGrades()
-//            mainMenu()
+        case "2":
+            allGrades()
+            mainMenu()
+        case "3":
+            everyoneAllGrades()
+            mainMenu()
+        case "4":
+            classAverage()
+            mainMenu()
+        case "5":
+            assignmentAverage()
+            mainMenu()
+        case "6":
+            lowestGrade()
+            mainMenu()
+        case "7":
+            highestGrade()
+            mainMenu()
+        case "9":
+            print("Have a great rest of your day!")
         default:
-            print("error")
+            print("Bruh.. Open eyes and select right option smh")
+            mainMenu()
         }
     }
 }

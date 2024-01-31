@@ -26,6 +26,7 @@
 /* Begin PBXFileReference section */
 		337427562B6026F100373F73 /* Grade-Management */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "Grade-Management"; sourceTree = BUILT_PRODUCTS_DIR; };
 		337427592B6026F100373F73 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
+		33CED71B2B6AA7CE00EDC8B8 /* grades.csv */ = {isa = PBXFileReference; lastKnownFileType = text; path = grades.csv; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -60,6 +61,7 @@
 			isa = PBXGroup;
 			children = (
 				337427592B6026F100373F73 /* main.swift */,
+				33CED71B2B6AA7CE00EDC8B8 /* grades.csv */,
 			);
 			path = "Grade-Management";
 			sourceTree = "<group>";
