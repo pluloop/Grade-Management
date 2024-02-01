@@ -5,50 +5,58 @@
 //  Created by StudentAM on 1/23/24.
 //
 
-import Foundation
-import CSV
+import Foundation // to use swift
+import CSV // for file with names / grades
 
-var everyoneGrades: [[String]] = []
-var names: [String] = []
-var finalGrades: [Double] = []
+var everyoneGrades: [[String]] = [] // for list of grades of everyone on file (to print later)
+var names: [String] = [] // store names of everyone on file (to print later)
+var finalGrades: [Double] = [] // store averages of everyone's grades (to print later)
 
+// to compute average grade and display
 func averageGrade(){
-    var name = ""
-    var position = 0
+    var name = "" // to display later
+    var position = 0 // to get grade of name from finalGrades
     
     print("Which student would you like to choose?")
     if let student = readLine(){
         for i in names.indices{
-            if names[i].lowercased() == student.lowercased(){
+            if names[i].lowercased() == student.lowercased(){ // find name from names
                 name = names[i]
                 position = i
             }
         }
     }
-    print("\(name)'s grade in class is \(finalGrades[position])\n")
+    if name == ""{ // if name invalid, retype name
+        print("Choose again bru.. use a usable name.")
+        averageGrade()
+    }else{ // if name valid print
+        print("\(name)'s grade in class is \(String(format: "%.2f", finalGrades[position]))\n")
+    }
 }
 
+// to fill everyoneGrades and finalGrades list and names list
 func manageData(studentData: [String]){
-    var individualGrades: [String] = []
-    var total = 0.0
-    var sum = 0.0
+    var individualGrades: [String] = [] // to store list of grades of 1 (add to list of everyone's grade later)
+    var total = 0.0 // operand to compute average
+    var sum = 0.0 // operand to compute average
     
     for i in studentData.indices{
         if i == 0{
-            names.append(studentData[i])
+            names.append(studentData[i]) // store 1 person's name in names list
         }else{
             individualGrades.append(studentData[i])
-            if let grade = Double(studentData[i])
+            if let grade = Double(studentData[i]) // computing operands of average
             {
                 sum += grade
                 total += 1.0
             }
         }
     }
-    everyoneGrades.append(individualGrades)
-    finalGrades.append(sum / total)
+    everyoneGrades.append(individualGrades) // store 1 person's grades in list
+    finalGrades.append(sum / total) // store 1 person's average in list
 }
 
+// to read file
 do{
     let file = InputStream(fileAtPath: "/Users/studentam/Desktop/swift/Grade-Management/Grade-Management/grades.csv")
     let csv = try CSVReader(stream: file!)
@@ -59,6 +67,7 @@ do{
     print("There was an error trying to read the file!")
 }
 
+// to print 1 person's grades (ALL)
 func allGrades(){
     var name = ""
     var grades = ""
@@ -66,10 +75,10 @@ func allGrades(){
     print("Which student would you like to choose?")
     if let student = readLine(){
         for user in names.indices{
-            if names[user].lowercased() == student{
+            if names[user].lowercased() == student{ // checks if name in list
                 name = names[user]
                 for grade in everyoneGrades[user]{
-                    if grade != everyoneGrades[user][everyoneGrades[user].count-1]{
+                    if grade != everyoneGrades[user][everyoneGrades[user].count-1]{ // to not have comma @ end
                         grades += grade + ", "
                     }else{
                         grades += grade
@@ -77,32 +86,39 @@ func allGrades(){
                 }
             }
         }
+    }
+    if name == ""{ // if name invalid, ask again
+        print("Name not found. Choose again.")
+        allGrades()
+    }else{ // if name valid, print
         print("\(name)'s grades for this class are:\n\(grades)\n")
-        
     }
 }
 
+// print everyone's grades (ALL)
 func everyoneAllGrades(){
-    var grades = ""
+    var grades = "" // to format
     
     for name in names.indices{
         for grade in everyoneGrades[name]{
-            if grade != everyoneGrades[name][everyoneGrades[name].count-1]{
+            if grade != everyoneGrades[name][everyoneGrades[name].count-1]{ // to not have commas @ end
                 grades += grade + ", "
             }else{
                 grades += grade
             }
         }
         print("\(names[name]) grades are: \(grades)\n")
-        grades = ""
+        grades = "" // reset for next person
     }
 }
 
+// to print class average
 func classAverage(){
+    // operands for average
     var sum = 0.0
     var total = 0.0
     
-    for grades in finalGrades{
+    for grades in finalGrades{ // computing operands
         sum += grades
         total += 1.0
     }
@@ -110,32 +126,36 @@ func classAverage(){
     print("The class average is: \(sum / total)\n")
 }
 
+// to find average of certan assignment
 func assignmentAverage(){
-    var assignmentNum = -1
-    var sum = 0.0
-    var total = 0.0
+    var assignmentNum = -1 // to store what assignment to find average
+    var sum = 0.0 // operand of average
+    var total = 0.0 // operand of average
     
     print("Which assignent would you like to get the average of (1-10):")
-    if let numStr = readLine(), let numInt: Int = Int(numStr){
+    if let numStr = readLine(), let numInt: Int = Int(numStr), numInt >= 1 && numInt <= 10{ // checks if assignment input valid
         assignmentNum = numInt
         for gradeList in everyoneGrades{
-            if let grade: Double = Double(gradeList[numInt-1]){
+            if let grade: Double = Double(gradeList[numInt-1]){ // fill operands if assignment is input
                 sum += grade
                 total += 1.0
             }
         }
+        print("The average for assignment #\(assignmentNum) is \(sum / total)\n") // print if valid
+    }else{
+        print("Assignment does not exist. Choose again.") // reenter if invalid
+        assignmentAverage()
     }
-    
-    print("The average for assignment #\(assignmentNum) is \(sum / total)\n")
 }
 
+// to find lowest grade
 func lowestGrade(){
-    var lowest = finalGrades[0]
-    var name = ""
+    var lowest = finalGrades[0] // to have minimum value
+    var name = "" // to print name of lowest grade person
     
-    for gradeIndex in finalGrades.indices{
+    for gradeIndex in finalGrades.indices{ // iterate through list
         let gradeDouble = finalGrades[gradeIndex]
-        if gradeDouble < lowest{
+        if gradeDouble < lowest{ // to change lowest if any number is lower
             lowest = gradeDouble
             name = names[gradeIndex]
         }
@@ -143,14 +163,14 @@ func lowestGrade(){
     
     print("\(name) is the student with the lowest grade: \(lowest)\n")
 }
-
+// to find highest grade
 func highestGrade(){
-    var highest = finalGrades[0]
-    var name = ""
+    var highest = finalGrades[0] // to have minimum value
+    var name = "" //t o print name of highest grade person
     
-    for gradeIndex in finalGrades.indices{
+    for gradeIndex in finalGrades.indices{ // iterate through list
         let gradeDouble = finalGrades[gradeIndex]
-        if gradeDouble > highest{
+        if gradeDouble > highest{ // to change highest if any number is lower
             highest = gradeDouble
             name = names[gradeIndex]
         }
@@ -159,24 +179,26 @@ func highestGrade(){
     print("\(name) is the student with the highest grade: \(highest)\n")
 }
 
+// to show names and grades of people with certain grade range
 func filterGrades(){
-    var filteredList = ""
+    var filteredList = "" // to store formatted string with names and grades in certain range (print later)
     
     print("Enter the low range you would like to use:")
-    if let minFilterStr = readLine(), let minFilterInt: Double = Double(minFilterStr){
+    if let minFilterStr = readLine(), let minFilterInt: Double = Double(minFilterStr){ // input min
         print("Enter the high range you would like to use:")
-        if let maxFilterStr = readLine(), let maxFilterInt: Double = Double(maxFilterStr){
-            for gradeIndex in finalGrades.indices{
-                let rangedGrade: String = String(finalGrades[gradeIndex]){
-                    if finalGrades[gradeIndex] >= minFilterInt && finalGrades[gradeIndex] <= maxFilterInt{
-                        filteredList += names[gradeIndex] + ": " + rangedGrade + "\n"
-                    }
+        if let maxFilterStr = readLine(), let maxFilterInt: Double = Double(maxFilterStr){ // input max
+            for gradeIndex in finalGrades.indices{ // iterate grades to find range
+                if finalGrades[gradeIndex] >= minFilterInt && finalGrades[gradeIndex] <= maxFilterInt{ // if in range, add to formatted string
+                    filteredList += "\(names[gradeIndex]): \(finalGrades[gradeIndex])\n"
                 }
             }
         }
     }
+    
+    print(filteredList)
 }
 
+// to allow user to execute certain activities
 func mainMenu(){
     print("""
 Welcome to the Grade Manager!
@@ -195,33 +217,36 @@ What would you like to do? (Enter the number):
     if let userInput = readLine(){
         switch userInput{
         case "1":
-            averageGrade()
+            averageGrade() // find average
             mainMenu()
         case "2":
-            allGrades()
+            allGrades() // display 1 person's grades
             mainMenu()
         case "3":
-            everyoneAllGrades()
+            everyoneAllGrades() // display everyone's grades
             mainMenu()
         case "4":
-            classAverage()
+            classAverage() // display class average
             mainMenu()
         case "5":
-            assignmentAverage()
+            assignmentAverage() // find average of 1 assignment
             mainMenu()
         case "6":
-            lowestGrade()
+            lowestGrade() // find lowest average
             mainMenu()
         case "7":
-            highestGrade()
+            highestGrade() // find highest average
+            mainMenu()
+        case "8":
+            filterGrades() // print names and grades of certain grade ranges
             mainMenu()
         case "9":
-            print("Have a great rest of your day!")
+            print("Have a great rest of your day!") // exit out of program
         default:
-            print("Bruh.. Open eyes and select right option smh")
+            print("Bruh.. Open eyes and select right option smh") // reeneter (wrong option chosen)
             mainMenu()
         }
     }
 }
 
-mainMenu()
+mainMenu() // start
